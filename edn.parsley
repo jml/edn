@@ -195,6 +195,21 @@ integer = <('+' | '-'){0,1} digit+>:i 'N'?-> int(i)
 # In addition, a floating-point number may have the suffix `M` to indicate that exact precision is
 # desired.
 #
+
+intPart = (digit1_9:first digits:rest -> first + rest) | digit
+
+exponent = <('e' | 'E') ('+' | '-')? digits>
+floatPart :sign :ds = <('.' digits exponent?) | exponent>:tail
+                     -> float(sign + ds + tail)
+
+digit = :x ?(x in '0123456789') -> x
+digits = digit*:ds -> ''.join(ds)
+digit1_9 = :x ?(x in '123456789') -> x
+digits1_9 = digit1_9*:ds -> ''.join(ds)
+
+float = ('-' | '+' | -> ''):sign (intPart:ds floatPart(sign ds))
+
+
 # ### lists
 #
 # A list is a sequence of values. Lists are represented by zero or more elements enclosed in
@@ -237,7 +252,7 @@ vector = '[' elem*:elems ']' -> Vector(elems)
 
 pair = datum:k consumable datum:v -> (k, v)
 members = (pair:first (consumable pair)*:rest -> [first] + rest) | -> []
-map = '{' consumable members:m consumable '}' -> dict(m)
+map = '{' consumable members:m consumable '}' -> Map(m)
 
 # ### sets
 #

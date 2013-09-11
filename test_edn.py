@@ -1,6 +1,6 @@
 import unittest
 
-from edn import edn, Symbol, Keyword, Vector, TaggedValue
+from edn import edn, Symbol, Keyword, Vector, TaggedValue, Map
 
 
 
@@ -46,6 +46,14 @@ baz\"""").string(), '\nfoo\nbar\nbaz')
         for edn_str, expected in integers:
             self.assertEqual(edn(edn_str).integer(), expected)
 
+    def test_float(self):
+        floats = [("-1.0e10", -10000000000.0),
+                  ("+1.0", 1.0),
+                  ("+1.0E-10", 0.0000000001)]
+
+        for edn_str, expected in floats:
+            self.assertEqual(edn(edn_str).float(), expected)
+
     def test_list(self):
         lists = [("()", ()),
                  ("(1)", (1,)),
@@ -67,10 +75,14 @@ baz\"""").string(), '\nfoo\nbar\nbaz')
             self.assertEqual(edn(edn_str).vector(), expected)
 
     def test_map(self):
-        maps = [("{}", {}),
-                ("{1 2}", {1: 2}),
+
+        maps = [("{}", Map([])),
+                ("{1 2}", Map([(1, 2)])),
                 ("{[1] {2 3}, (4 5 6), 7}",
-                 {(1,): {2: 3}, (4, 5, 6): 7})]
+                 Map([((1,), Map([(2, 3)])),
+                      ((4, 5, 6), 7)])),
+                ("{{1 2} {3 4}}", Map([(Map([(1, 2)]),
+                                        Map([(3, 4)]))]))]
 
         for edn_str, expected in maps:
             self.assertEqual(edn(edn_str).map(), expected)
