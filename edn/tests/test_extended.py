@@ -152,6 +152,11 @@ class LoadsTestCase(unittest.TestCase):
             frozendict({Keyword(Symbol('foo')): Symbol('bar')}),
             loads('{:foo bar}'))
 
+    def test_nested_structure(self):
+        self.assertEqual(
+            frozendict({frozendict({3: 4}): frozendict({1: 2})}),
+            loads('{{3 4} {1 2}}'))
+
     def test_custom_tag(self):
         text = '#foo [1 2]'
         parsed = loads(text, {Symbol('foo'): reverse})
@@ -168,6 +173,11 @@ class LoadsTestCase(unittest.TestCase):
         loads(text, {foo: lambda x: list(reversed(x))})
         parsed = loads(text)
         self.assertEqual(TaggedValue(foo, (1, 2)), parsed)
+
+    def test_tagged_dict(self):
+        readers = {Symbol('foo'): lambda x: x}
+        self.assertEqual(frozendict(), loads('#foo {}', readers))
+        self.assertEqual(frozendict({1: 2}), loads('#foo {1 2}', readers))
 
     def test_nil(self):
         self.assertEqual(None, loads('nil'))
@@ -217,6 +227,7 @@ class LoadTestCase(unittest.TestCase):
         stream = StringIO('#foo [1 2] #bar "qux"')
         parsed = list(load(stream, default=handler))
         self.assertEqual([(marker, (1, 2)), (marker, u"qux")], parsed)
+
 
 
 class Custom(object):

@@ -179,6 +179,7 @@ baz\"""").string(), String('\nfoo\nbar\nbaz'))
             ('#foo     baz', TaggedValue(Symbol('foo'), Symbol('baz'))),
             ('#foo\n  baz', TaggedValue(Symbol('foo'), Symbol('baz'))),
             ('#foo ; comment\nbar', TaggedValue(Symbol('foo'), Symbol('bar'))),
+            ('#foo {}', TaggedValue(Symbol('foo'), Map(()))),
         ]
         for edn_str, expected in tags:
             self.assertEqual(edn(edn_str).tag(), expected)
