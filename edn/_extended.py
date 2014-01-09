@@ -9,6 +9,7 @@ Which can be turned into a Python object::
   [u"foo", u"bar", 43]
 """
 
+import collections
 import datetime
 from decimal import Decimal
 import uuid
@@ -35,6 +36,9 @@ from ._ast import (
     unparse,
     unparse_stream,
 )
+
+
+TaggyWaggyThing = collections.namedtuple('TaggyWaggyThing', 'symbol value')
 
 
 def identity(x):
@@ -79,7 +83,7 @@ class _Decoder(object):
         self._decoders = decoders.with_pair(
             'TaggedValue', self._handle_tagged_value)
         if not default:
-            default = TaggedValue
+            default = TaggyWaggyThing
         self._default = default
 
     def _handle_tagged_value(self, symbol, value):

@@ -31,6 +31,7 @@ from .._extended import (
     from_terms,
     to_terms,
     INST,
+    TaggyWaggyThing,
     UUID,
 )
 
@@ -90,11 +91,14 @@ class DecoderTests(unittest.TestCase):
 
     def test_tagged_value(self):
         self.assertEqual(
-            TaggedValue(Symbol('foo'), 'bar'),
+            TaggyWaggyThing(Symbol('foo'), 'bar'),
             from_terms(TaggedValue(Symbol('foo'), String('bar'))))
         self.assertEqual(
-            TaggedValue(Symbol('foo', 'qux'), 'bar'),
+            TaggyWaggyThing(Symbol('foo', 'qux'), 'bar'),
             from_terms(TaggedValue(Symbol('foo', 'qux'), String('bar'))))
+        self.assertEqual(
+            TaggyWaggyThing(Symbol('foo', 'qux'), frozendict()),
+            from_terms(TaggedValue(Symbol('foo', 'qux'), Map(()))))
 
     def test_readers(self):
         ast = TaggedValue(Symbol('foo'), String('bar'))
@@ -172,7 +176,7 @@ class LoadsTestCase(unittest.TestCase):
         text = '#foo [1 2]'
         loads(text, {foo: lambda x: list(reversed(x))})
         parsed = loads(text)
-        self.assertEqual(TaggedValue(foo, (1, 2)), parsed)
+        self.assertEqual(TaggyWaggyThing(foo, (1, 2)), parsed)
 
     def test_tagged_dict(self):
         readers = {Symbol('foo'): lambda x: x}
